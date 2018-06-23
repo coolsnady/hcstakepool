@@ -640,8 +640,11 @@ func (controller *MainController) FeeAddressForUserID(uid int) (hxutil.Address,
 	if err != nil {
 		return nil, err
 	}
-
-	addr, err := key.Address(controller.params,0)
+	addrType := uint8(0)
+	if key.GetAlgType() == 4 {
+		addrType = 1
+	}
+	addr, err := key.Address(controller.params,addrType)
 	if err != nil {
 		return nil, err
 	}
@@ -671,7 +674,12 @@ func (controller *MainController) TicketAddressForUserID(uid int) (hxutil.Addres
 		return nil, err
 	}
 
-	addr, err := key.Address(controller.params,0)
+	addrType := uint8(0)
+	if key.GetAlgType() == 4 {
+		addrType = 1
+	} 
+
+	addr, err := key.Address(controller.params,addrType)
 	if err != nil {
 		return nil, err
 	}

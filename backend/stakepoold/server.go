@@ -174,7 +174,12 @@ func deriveChildAddresses(key *hdkeychain.ExtendedKey, startIndex, count uint32,
 		if err != nil {
 			return nil, err
 		}
-		addr, err := child.Address(params,0)
+
+		addrType := uint8(0)
+		if key.GetAlgType() == 4 {
+			addrType = 1
+		}
+		addr, err := child.Address(params,addrType)
 		if err != nil {
 			return nil, err
 		}
