@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/coolsnady/hxd/chaincfg/chainhash"
-	"github.com/coolsnady/hxd/dcrutil"
+	"github.com/coolsnady/hxd/hxutil"
 	"github.com/coolsnady/hxd/rpcclient"
 	"github.com/coolsnady/hxstakepool/backend/stakepoold/userdata"
 )
@@ -164,7 +164,7 @@ func walletGetTickets(ctx *appContext, currentHeight int64) (map[chainhash.Hash]
 				continue
 			}
 
-			addr, err := dcrutil.DecodeAddress(gt.Details[i].Address)
+			addr, err := hxutil.DecodeAddress(gt.Details[i].Address)
 			if err != nil {
 				log.Warnf("invalid address %v", err)
 				continue

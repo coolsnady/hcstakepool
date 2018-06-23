@@ -23,8 +23,8 @@ import (
 	"github.com/coolsnady/hxd/blockchain/stake"
 	"github.com/coolsnady/hxd/chaincfg"
 	"github.com/coolsnady/hxd/chaincfg/chainhash"
-	"github.com/coolsnady/hxd/dcrjson"
-	"github.com/coolsnady/hxd/dcrutil"
+	"github.com/coolsnady/hxd/hxutil"
+	"github.com/coolsnady/hxd/hxjson"
 	"github.com/coolsnady/hxd/hdkeychain"
 	"github.com/coolsnady/hxd/rpcclient"
 	"github.com/coolsnady/hxd/wire"
@@ -164,8 +164,8 @@ func calculateFeeAddresses(xpubStr string, params *chaincfg.Params) (map[string]
 	return addrMap, nil
 }
 
-func deriveChildAddresses(key *hdkeychain.ExtendedKey, startIndex, count uint32, params *chaincfg.Params) ([]dcrutil.Address, error) {
-	addresses := make([]dcrutil.Address, 0, count)
+func deriveChildAddresses(key *hdkeychain.ExtendedKey, startIndex, count uint32, params *chaincfg.Params) ([]hxutil.Address, error) {
+	addresses := make([]hxutil.Address, 0, count)
 	for i := uint32(0); i < count; {
 		child, err := key.Child(startIndex + i)
 		if err == hdkeychain.ErrInvalidChild {
@@ -174,7 +174,7 @@ func deriveChildAddresses(key *hdkeychain.ExtendedKey, startIndex, count uint32,
 		if err != nil {
 			return nil, err
 		}
-		addr, err := child.Address(params)
+		addr, err := child.Address(params,0)
 		if err != nil {
 			return nil, err
 		}
@@ -187,7 +187,7 @@ func deriveChildAddresses(key *hdkeychain.ExtendedKey, startIndex, count uint32,
 // evaluateStakePoolTicket evaluates a stake pool ticket to see if it's
 // acceptable to the stake pool. The ticket must pay out to the stake
 // pool cold wallet, and must have a sufficient fee.
-func evaluateStakePoolTicket(ctx *appContext, tx *wire.MsgTx, blockHeight int32, poolUser dcrutil.Address) (bool, error) {
+func evaluateStakePoolTicket(ctx *appContext, tx *wire.MsgTx, blockHeight int32, poolUser hxutil.Address) (bool, error) {
 	// Check the first commitment output (txOuts[1])
 	// and ensure that the address found there exists
 	// in the list of approved addresses. Also ensure
@@ -202,7 +202,7 @@ func evaluateStakePoolTicket(ctx *appContext, tx *wire.MsgTx, blockHeight int32,
 	}
 
 	// Extract the fee from the ticket.
-	in := dcrutil.Amount(0)
+	in := hxutil.Amount(0)
 	for i := range tx.TxOut {
 		if i%2 != 0 {
 			commitAmt, err := stake.AmountFromSStxPkScrCommitment(
@@ -214,9 +214,9 @@ func evaluateStakePoolTicket(ctx *appContext, tx *wire.MsgTx, blockHeight int32,
 			in += commitAmt
 		}
 	}
-	out := dcrutil.Amount(0)
+	out := hxutil.Amount(0)
 	for i := range tx.TxOut {
-		out += dcrutil.Amount(tx.TxOut[i].Value)
+		out += hxutil.Amount(tx.TxOut[i].Value)
 	}
 	fees := in - out
 
@@ -231,7 +231,7 @@ func evaluateStakePoolTicket(ctx *appContext, tx *wire.MsgTx, blockHeight int32,
 
 		// Calculate the fee required based on the current
 		// height and the required amount from the pool.
-		feeNeeded := txrules.StakePoolTicketFee(dcrutil.Amount(
+		feeNeeded := txrules.StakePoolTicketFee(hxutil.Amount(
 			tx.TxOut[0].Value), fees, blockHeight, ctx.poolFees,
 			ctx.params)
 		if commitAmt < feeNeeded {
@@ -346,7 +346,7 @@ func runMain() error {
 		log.Infof("loaded prefs for %d users from MySQL", len(userVotingConfig))
 	}
 
-	if !txrules.ValidPoolFeeRate(cfg.PoolFees) {
+	if err := txrules.IsValidPoolFeeRate(cfg.PoolFees); err != nil {
 		return errors.New("invalid pool fee ")
 	}
 
@@ -880,7 +880,7 @@ func (ctx *appContext) vote(wg *sync.WaitGroup, blockHash *chainhash.Hash, block
 	}()
 
 	// Ask wallet to generate vote result.
-	var res *dcrjson.GenerateVoteResult
+	var res *hxjson.GenerateVoteResult
 	res, w.err = ctx.walletConnection.GenerateVote(blockHash, blockHeight,
 		w.ticket, w.config.VoteBits, ctx.votingConfig.VoteBitsExtended)
 	if w.err != nil || res.Hex == "" {
@@ -948,7 +948,7 @@ func (ctx *appContext) processNewTickets(nt NewTicketsForBlock) {
 		}
 
 		// decode address
-		addr, err := dcrutil.DecodeAddress(n.msa)
+		addr, err := hxutil.DecodeAddress(n.msa)
 		if err != nil {
 			log.Warnf("invalid address %v", err)
 			continue

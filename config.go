@@ -16,7 +16,7 @@ import (
 	"strings"
 
 	flags "github.com/btcsuite/go-flags"
-	"github.com/coolsnady/hxd/dcrutil"
+	"github.com/coolsnady/hxd/hxutil"
 )
 
 const (
@@ -46,7 +46,7 @@ const (
 )
 
 var (
-	hxstakepoolHomeDir = dcrutil.AppDataDir("hxstakepool", false)
+	hxstakepoolHomeDir = hxutil.AppDataDir("hxstakepool", false)
 	defaultConfigFile   = filepath.Join(hxstakepoolHomeDir, defaultConfigFilename)
 	defaultDataDir      = filepath.Join(hxstakepoolHomeDir, defaultDataDirname)
 	defaultLogDir       = filepath.Join(hxstakepoolHomeDir, defaultLogDirname)
