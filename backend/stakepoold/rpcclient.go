@@ -17,41 +17,41 @@ var requiredWalletAPI = semver{major: 5, minor: 0, patch: 0}
 func connectNodeRPC(ctx *appContext, cfg *config) (*hcrpcclient.Client, semver, error) {
 	var nodeVer semver
 
-	hxdCert, err := ioutil.ReadFile(cfg.HxdCert)
+	hcdCert, err := ioutil.ReadFile(cfg.HcdCert)
 	if err != nil {
 		log.Errorf("Failed to read hcd cert file at %s: %s\n",
-			cfg.HxdCert, err.Error())
+			cfg.HcdCert, err.Error())
 		return nil, nodeVer, err
 	}
 
 	log.Debugf("Attempting to connect to hcd RPC %s as user %s "+
 		"using certificate located in %s",
-		cfg.HxdHost, cfg.HxdUser, cfg.HxdCert)
+		cfg.HcdHost, cfg.HcdUser, cfg.HcdCert)
 
 	connCfgDaemon := &hcrpcclient.ConnConfig{
-		Host:         cfg.HxdHost,
+		Host:         cfg.HcdHost,
 		Endpoint:     "ws", // websocket
-		User:         cfg.HxdUser,
-		Pass:         cfg.HxdPassword,
-		Certificates: hxdCert,
+		User:         cfg.HcdUser,
+		Pass:         cfg.HcdPassword,
+		Certificates: hcdCert,
 	}
 
 	ntfnHandlers := getNodeNtfnHandlers(ctx, connCfgDaemon)
-	hxdClient, err := hcrpcclient.New(connCfgDaemon, ntfnHandlers)
+	hcdClient, err := hcrpcclient.New(connCfgDaemon, ntfnHandlers)
 	if err != nil {
 		log.Errorf("Failed to start hcd RPC client: %s\n", err.Error())
 		return nil, nodeVer, err
 	}
 
 	// Ensure the RPC server has a compatible API version.
-	ver, err := hxdClient.Version()
+	ver, err := hcdClient.Version()
 	if err != nil {
 		log.Error("Unable to get RPC version: ", err)
 		return nil, nodeVer, fmt.Errorf("Unable to get node RPC version")
 	}
 
-	hxdVer := ver["hxdjsonrpcapi"]
-	nodeVer = semver{hxdVer.Major, hxdVer.Minor, hxdVer.Patch}
+	hcdVer := ver["hcdjsonrpcapi"]
+	nodeVer = semver{hcdVer.Major, hcdVer.Minor, hcdVer.Patch}
 
 	if !semverCompatible(requiredChainServerAPI, nodeVer) {
 		return nil, nodeVer, fmt.Errorf("Node JSON-RPC server does not have "+
@@ -59,7 +59,7 @@ func connectNodeRPC(ctx *appContext, cfg *config) (*hcrpcclient.Client, semver, 
 			nodeVer, requiredChainServerAPI)
 	}
 
-	return hxdClient, nodeVer, nil
+	return hcdClient, nodeVer, nil
 }
 
 func connectWalletRPC(cfg *config) (*hcrpcclient.Client, semver, error) {
@@ -99,7 +99,7 @@ func connectWalletRPC(cfg *config) (*hcrpcclient.Client, semver, error) {
 		return nil, walletVer, fmt.Errorf("Unable to get node RPC version")
 	}
 
-	hxwVer := ver["hxwalletjsonrpcapi"]
+	hxwVer := ver["hcwalletjsonrpcapi"]
 	walletVer = semver{hxwVer.Major, hxwVer.Minor, hxwVer.Patch}
 
 	if !semverCompatible(requiredWalletAPI, walletVer) {

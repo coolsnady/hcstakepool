@@ -18,7 +18,7 @@ var activeNetParams = &mainNetParams
 // network and test networks.
 type params struct {
 	*chaincfg.Params
-	HxdRPCServerPort   string
+	HcdRPCServerPort   string
 	RPCServerPort       string
 	WalletRPCServerPort string
 }
@@ -31,7 +31,7 @@ type params struct {
 // to emulate the full reference implementation RPC API.
 var mainNetParams = params{
 	Params:              &chaincfg.MainNetParams,
-	HxdRPCServerPort:   "9109",
+	HcdRPCServerPort:   "9109",
 	RPCServerPort:       "9113",
 	WalletRPCServerPort: "9110",
 }
@@ -41,16 +41,16 @@ var mainNetParams = params{
 // reference implementation - see the mainNetParams comment for details.
 var testNet2Params = params{
 	Params:              &chaincfg.TestNet2Params,
-	HxdRPCServerPort:   "19109",
+	HcdRPCServerPort:   "19109",
 	RPCServerPort:       "19113",
-	WalletRPCServerPort: "19110",
+	WalletRPCServerPort: "12010",
 }
 
 // simNetParams contains parameters specific to the simulation test network
 // (wire.SimNet).
 var simNetParams = params{
 	Params:              &chaincfg.SimNetParams,
-	HxdRPCServerPort:   "19556",
+	HcdRPCServerPort:   "19556",
 	RPCServerPort:       "19560",
 	WalletRPCServerPort: "19557",
 }

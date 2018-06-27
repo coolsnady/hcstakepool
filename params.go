@@ -41,7 +41,7 @@ var mainNetParams = params{
 var testNet2Params = params{
 	Params:                  &chaincfg.TestNet2Params,
 	StakepooldRPCServerPort: "19113",
-	WalletRPCServerPort:     "19110",
+	WalletRPCServerPort:     "12010",
 }
 
 // simNetParams contains parameters specific to the simulation test network

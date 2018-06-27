@@ -67,10 +67,10 @@ type config struct {
 	DBPassword       string  `long:"dbpassword" description:"Password for database connection"`
 	DBPort           string  `long:"dbport" description:"Port for database connection"`
 	DBName           string  `long:"dbname" description:"Name of database"`
-	HxdHost         string  `long:"hxdhost" description:"Hostname/IP for hcd server"`
-	HxdUser         string  `long:"hxduser" description:"Username for hcd server"`
-	HxdPassword     string  `long:"hxdpassword" description:"Password for hcd server"`
-	HxdCert         string  `long:"hxdcert" description:"Certificate path for hcd server"`
+	HcdHost         string  `long:"hcdhost" description:"Hostname/IP for hcd server"`
+	HcdUser         string  `long:"hcduser" description:"Username for hcd server"`
+	HcdPassword     string  `long:"hcdpassword" description:"Password for hcd server"`
+	HcdCert         string  `long:"hcdcert" description:"Certificate path for hcd server"`
 	WalletHost       string  `long:"wallethost" description:"Hostname for wallet server"`
 	WalletUser       string  `long:"walletuser" description:"Username for wallet server"`
 	WalletPassword   string  `long:"walletpassword" description:"Password for wallet server"`
@@ -486,29 +486,29 @@ func loadConfig() (*config, []string, error) {
 		return nil, nil, err
 	}
 
-	if len(cfg.HxdHost) == 0 {
-		str := "%s: hxdhost is not set in config"
+	if len(cfg.HcdHost) == 0 {
+		str := "%s: hcdhost is not set in config"
 		err := fmt.Errorf(str, funcName)
 		fmt.Fprintln(os.Stderr, err)
 		return nil, nil, err
 	}
 
-	if len(cfg.HxdCert) == 0 {
-		str := "%s: hxdcert is not set in config"
+	if len(cfg.HcdCert) == 0 {
+		str := "%s: hcdcert is not set in config"
 		err := fmt.Errorf(str, funcName)
 		fmt.Fprintln(os.Stderr, err)
 		return nil, nil, err
 	}
 
-	if len(cfg.HxdUser) == 0 {
-		str := "%s: hxduser is not set in config"
+	if len(cfg.HcdUser) == 0 {
+		str := "%s: hcduser is not set in config"
 		err := fmt.Errorf(str, funcName)
 		fmt.Fprintln(os.Stderr, err)
 		return nil, nil, err
 	}
 
-	if len(cfg.HxdPassword) == 0 {
-		str := "%s: hxdpassword is not set in config"
+	if len(cfg.HcdPassword) == 0 {
+		str := "%s: hcdpassword is not set in config"
 		err := fmt.Errorf(str, funcName)
 		fmt.Fprintln(os.Stderr, err)
 		return nil, nil, err
@@ -543,20 +543,20 @@ func loadConfig() (*config, []string, error) {
 	}
 
 	// Add default wallet port for the active network if there's no port specified
-	cfg.HxdHost = normalizeAddress(cfg.HxdHost, activeNetParams.HxdRPCServerPort)
+	cfg.HcdHost = normalizeAddress(cfg.HcdHost, activeNetParams.HcdRPCServerPort)
 	cfg.WalletHost = normalizeAddress(cfg.WalletHost, activeNetParams.WalletRPCServerPort)
 
-	if !fileExists(cfg.HxdCert) {
-		path := filepath.Join(cfg.HomeDir, cfg.HxdCert)
+	if !fileExists(cfg.HcdCert) {
+		path := filepath.Join(cfg.HomeDir, cfg.HcdCert)
 		if !fileExists(path) {
-			str := "%s: hxdcert " + cfg.HxdCert + " and " +
+			str := "%s: hcdcert " + cfg.HcdCert + " and " +
 				path + " don't exist"
 			err := fmt.Errorf(str, funcName)
 			fmt.Fprintln(os.Stderr, err)
 			return nil, nil, err
 		}
 
-		cfg.HxdCert = path
+		cfg.HcdCert = path
 	}
 
 	if !fileExists(cfg.WalletCert) {
