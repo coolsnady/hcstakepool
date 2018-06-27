@@ -11,10 +11,10 @@ import (
 
 	"github.com/gorilla/context"
 
-	"github.com/coolsnady/hxd/rpcclient"
-	"github.com/coolsnady/hxstakepool/controllers"
-	"github.com/coolsnady/hxstakepool/stakepooldclient"
-	"github.com/coolsnady/hxstakepool/system"
+	"github.com/coolsnady/hcrpcclient"
+	"github.com/coolsnady/hcstakepool/controllers"
+	"github.com/coolsnady/hcstakepool/stakepooldclient"
+	"github.com/coolsnady/hcstakepool/system"
 
 	"github.com/zenazn/goji/graceful"
 	"github.com/zenazn/goji/web"
@@ -76,7 +76,7 @@ func runMain() int {
 	// SIGUSR1 = Reload html templates (On nix systems)
 	system.ReloadTemplatesSig(application)
 
-	rpcclient.UseLogger(log)
+	hcrpcclient.UseLogger(log)
 
 	// Setup static files
 	assetHandler := http.StripPrefix("/assets/",

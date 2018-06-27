@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/coolsnady/hxstakepool/models"
+	"github.com/coolsnady/hcstakepool/models"
 	"github.com/go-gorp/gorp"
 	"github.com/gorilla/sessions"
 	"github.com/zenazn/goji/web"

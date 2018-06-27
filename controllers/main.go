@@ -14,17 +14,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coolsnady/hxd/chaincfg"
-	"github.com/coolsnady/hxd/chaincfg/chainhash"
-	"github.com/coolsnady/hxd/hxjson"
-	"github.com/coolsnady/hxd/hxutil"
-	"github.com/coolsnady/hxd/hdkeychain"
-	"github.com/coolsnady/hxstakepool/helpers"
-	"github.com/coolsnady/hxstakepool/models"
-	"github.com/coolsnady/hxstakepool/poolapi"
-	"github.com/coolsnady/hxstakepool/stakepooldclient"
-	"github.com/coolsnady/hxstakepool/system"
-	"github.com/coolsnady/hxwallet/wallet/udb"
+	"github.com/coolsnady/hcd/chaincfg"
+	"github.com/coolsnady/hcd/chaincfg/chainhash"
+	"github.com/coolsnady/hcd/dcrjson"
+	"github.com/coolsnady/hcutil"
+	"github.com/coolsnady/hcutil/hdkeychain"
+	"github.com/coolsnady/hcstakepool/helpers"
+	"github.com/coolsnady/hcstakepool/models"
+	"github.com/coolsnady/hcstakepool/poolapi"
+	"github.com/coolsnady/hcstakepool/stakepooldclient"
+	"github.com/coolsnady/hcstakepool/system"
+	"github.com/coolsnady/hcwallet/wallet/udb"
 	"github.com/go-gorp/gorp"
 	"github.com/haisum/recaptcha"
 	"github.com/zenazn/goji/web"
@@ -261,12 +261,12 @@ func (controller *MainController) APIAddress(c web.C, r *http.Request) ([]string
 		return nil, codes.InvalidArgument, "address error", errors.New("address too long")
 	}
 
-	u, err := hxutil.DecodeAddress(userPubKeyAddr)
+	u, err := hcutil.DecodeAddress(userPubKeyAddr)
 	if err != nil {
 		return nil, codes.InvalidArgument, "address error", errors.New("couldn't decode address")
 	}
 
-	_, is := u.(*hxutil.AddressSecpPubKey)
+	_, is := u.(*hcutil.AddressSecpPubKey)
 	if !is {
 		return nil, codes.InvalidArgument, "address error", errors.New("incorrect address type")
 	}
@@ -291,7 +291,7 @@ func (controller *MainController) APIAddress(c web.C, r *http.Request) ([]string
 
 	poolPubKeyAddr := poolValidateAddress.PubKeyAddr
 
-	p, err := hxutil.DecodeAddress(poolPubKeyAddr)
+	p, err := hcutil.DecodeAddress(poolPubKeyAddr)
 	if err != nil {
 		controller.handlePotentialFatalError("DecodeAddress poolPubKeyAddr", err)
 		return nil, codes.Unavailable, "system error", errors.New("unable to process wallet commands")
@@ -300,7 +300,7 @@ func (controller *MainController) APIAddress(c web.C, r *http.Request) ([]string
 	if controller.RPCIsStopped() {
 		return nil, codes.Unavailable, "system error", errors.New("unable to process wallet commands")
 	}
-	createMultiSig, err := controller.rpcServers.CreateMultisig(1, []hxutil.Address{p, u})
+	createMultiSig, err := controller.rpcServers.CreateMultisig(1, []hcutil.Address{p, u})
 	if err != nil {
 		controller.handlePotentialFatalError("CreateMultisig", err)
 		return nil, codes.Unavailable, "system error", errors.New("unable to process wallet commands")
@@ -621,7 +621,7 @@ func (controller *MainController) StakepooldUpdateAll(dbMap *gorp.DbMap, updateK
 
 // FeeAddressForUserID generates a unique payout address per used ID for
 // fees for an individual pool user.
-func (controller *MainController) FeeAddressForUserID(uid int) (hxutil.Address,
+func (controller *MainController) FeeAddressForUserID(uid int) (hcutil.Address,
 	error) {
 	if uid+1 > MaxUsers {
 		return nil, fmt.Errorf("bad uid index %v", uid)
@@ -654,7 +654,7 @@ func (controller *MainController) FeeAddressForUserID(uid int) (hxutil.Address,
 
 // TicketAddressForUserID generates a unique ticket address per used ID for
 // generating the 1-of-2 multisig.
-func (controller *MainController) TicketAddressForUserID(uid int) (hxutil.Address,
+func (controller *MainController) TicketAddressForUserID(uid int) (hcutil.Address,
 	error) {
 	if uid+1 > MaxUsers {
 		return nil, fmt.Errorf("bad uid index %v", uid)
@@ -791,7 +791,7 @@ func (controller *MainController) RPCIsStopped() bool {
 }
 
 // WalletStatus returns current WalletInfo from all rpcServers.
-func (controller *MainController) WalletStatus() ([]*hxjson.WalletInfoResult, error) {
+func (controller *MainController) WalletStatus() ([]*dcrjson.WalletInfoResult, error) {
 	return controller.rpcServers.WalletStatus()
 }
 
@@ -861,14 +861,14 @@ func (controller *MainController) AddressPost(c web.C, r *http.Request) (string,
 		return controller.Address(c, r)
 	}
 
-	// Get hxutil.Address for user from pubkey address string
-	u, err := hxutil.DecodeAddress(userPubKeyAddr)
+	// Get hcutil.Address for user from pubkey address string
+	u, err := hcutil.DecodeAddress(userPubKeyAddr)
 	if err != nil {
 		session.AddFlash("Couldn't decode address", "address")
 		return controller.Address(c, r)
 	}
 
-	_, is := u.(*hxutil.AddressSecpPubKey)
+	_, is := u.(*hcutil.AddressSecpPubKey)
 	if !is {
 		session.AddFlash("Incorrect address type", "address")
 		return controller.Address(c, r)
@@ -900,7 +900,7 @@ func (controller *MainController) AddressPost(c web.C, r *http.Request) (string,
 	poolPubKeyAddr := poolValidateAddress.PubKeyAddr
 
 	// Get back Address from pool's new pubkey address
-	p, err := hxutil.DecodeAddress(poolPubKeyAddr)
+	p, err := hcutil.DecodeAddress(poolPubKeyAddr)
 	if err != nil {
 		controller.handlePotentialFatalError("DecodeAddress poolPubKeyAddr", err)
 		return "/error", http.StatusSeeOther
@@ -910,7 +910,7 @@ func (controller *MainController) AddressPost(c web.C, r *http.Request) (string,
 	if controller.RPCIsStopped() {
 		return "/error", http.StatusSeeOther
 	}
-	createMultiSig, err := controller.rpcServers.CreateMultisig(1, []hxutil.Address{p, u})
+	createMultiSig, err := controller.rpcServers.CreateMultisig(1, []hcutil.Address{p, u})
 	if err != nil {
 		controller.handlePotentialFatalError("CreateMultisig", err)
 		return "/error", http.StatusSeeOther
@@ -2017,7 +2017,7 @@ func (controller *MainController) Tickets(c web.C, r *http.Request) (string, int
 	}
 
 	// Get P2SH Address
-	multisig, err := hxutil.DecodeAddress(user.MultiSigAddress)
+	multisig, err := hcutil.DecodeAddress(user.MultiSigAddress)
 	if err != nil {
 		log.Infof("Invalid address %v in database: %v", user.MultiSigAddress, err)
 		return "/error", http.StatusSeeOther

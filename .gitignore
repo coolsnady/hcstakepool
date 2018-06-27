@@ -1,5 +1,5 @@
 config.toml
-hxstakepool
+hcstakepool
 vendor
 .vscode/
 controllers/config.go*

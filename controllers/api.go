@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/coolsnady/hxstakepool/system"
+	"github.com/coolsnady/hcstakepool/system"
 )
 
 type ApiController struct {

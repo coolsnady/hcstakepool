@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/coolsnady/hxd/chaincfg"
-	"github.com/coolsnady/hxd/chaincfg/chainhash"
-	"github.com/coolsnady/hxstakepool/backend/stakepoold/userdata"
+	"github.com/coolsnady/hcd/chaincfg"
+	"github.com/coolsnady/hcd/chaincfg/chainhash"
+	"github.com/coolsnady/hcstakepool/backend/stakepoold/userdata"
 )
 
 func TestCalculateFeeAddresses(t *testing.T) {

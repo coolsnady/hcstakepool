@@ -16,17 +16,17 @@ import (
 	"strings"
 
 	flags "github.com/btcsuite/go-flags"
-	"github.com/coolsnady/hxd/hxutil"
+	"github.com/coolsnady/hcutil"
 )
 
 const (
 	defaultBaseURL          = "http://127.0.0.1:8000"
 	defaultClosePoolMsg     = "The stake pool is temporarily closed to new signups."
-	defaultConfigFilename   = "hxstakepool.conf"
+	defaultConfigFilename   = "hcstakepool.conf"
 	defaultDataDirname      = "data"
 	defaultLogLevel         = "info"
 	defaultLogDirname       = "logs"
-	defaultLogFilename      = "hxstakepool.log"
+	defaultLogFilename      = "hcstakepool.log"
 	defaultCookieSecure     = false
 	defaultDBHost           = "localhost"
 	defaultDBName           = "stakepool"
@@ -46,7 +46,7 @@ const (
 )
 
 var (
-	hxstakepoolHomeDir = hxutil.AppDataDir("hxstakepool", false)
+	hxstakepoolHomeDir = hcutil.AppDataDir("hcstakepool", false)
 	defaultConfigFile   = filepath.Join(hxstakepoolHomeDir, defaultConfigFilename)
 	defaultDataDir      = filepath.Join(hxstakepoolHomeDir, defaultDataDirname)
 	defaultLogDir       = filepath.Join(hxstakepoolHomeDir, defaultLogDirname)
@@ -56,7 +56,7 @@ var (
 // to parse and execute service commands specified via the -s flag.
 var runServiceCommand func(string) error
 
-// config defines the configuration options for hxd.
+// config defines the configuration options for hcd.
 //
 // See loadConfig for details on the configuration load process.
 type config struct {

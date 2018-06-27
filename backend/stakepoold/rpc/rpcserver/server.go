@@ -9,7 +9,7 @@
 // Full documentation of the API implemented by this package is maintained in a
 // language-agnostic document:
 //
-// TODO Document gRPC API like hxwallet once the API is stable
+// TODO Document gRPC API like hcwallet once the API is stable
 package rpcserver
 
 import (
@@ -18,16 +18,16 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	"github.com/coolsnady/hxd/chaincfg/chainhash"
-	pb "github.com/coolsnady/hxstakepool/backend/stakepoold/rpc/stakepoolrpc"
-	"github.com/coolsnady/hxstakepool/backend/stakepoold/userdata"
+	"github.com/coolsnady/hcd/chaincfg/chainhash"
+	pb "github.com/coolsnady/hcstakepool/backend/stakepoold/rpc/stakepoolrpc"
+	"github.com/coolsnady/hcstakepool/backend/stakepoold/userdata"
 )
 
 // Public API version constants
 const (
 	// The most probable reason for a command timing out would be because a
 	// deadlock has occurred in the main process.  We want to reply with an
-	// error message in this case before hxstakepool applies a client timeout.
+	// error message in this case before hcstakepool applies a client timeout.
 	// The commands are basic map operations and copies and typically complete
 	// within one millisecond.  It is possible for an abnormally long garbage
 	// collection cycle to also trigger a timeout but the current allocation

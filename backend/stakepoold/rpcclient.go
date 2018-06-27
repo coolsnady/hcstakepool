@@ -5,30 +5,30 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/coolsnady/hxd/chaincfg/chainhash"
-	"github.com/coolsnady/hxd/hxutil"
-	"github.com/coolsnady/hxd/rpcclient"
-	"github.com/coolsnady/hxstakepool/backend/stakepoold/userdata"
+	"github.com/coolsnady/hcd/chaincfg/chainhash"
+	"github.com/coolsnady/hcutil"
+	"github.com/coolsnady/hcrpcclient"
+	"github.com/coolsnady/hcstakepool/backend/stakepoold/userdata"
 )
 
 var requiredChainServerAPI = semver{major: 3, minor: 1, patch: 0}
 var requiredWalletAPI = semver{major: 5, minor: 0, patch: 0}
 
-func connectNodeRPC(ctx *appContext, cfg *config) (*rpcclient.Client, semver, error) {
+func connectNodeRPC(ctx *appContext, cfg *config) (*hcrpcclient.Client, semver, error) {
 	var nodeVer semver
 
 	hxdCert, err := ioutil.ReadFile(cfg.HxdCert)
 	if err != nil {
-		log.Errorf("Failed to read hxd cert file at %s: %s\n",
+		log.Errorf("Failed to read hcd cert file at %s: %s\n",
 			cfg.HxdCert, err.Error())
 		return nil, nodeVer, err
 	}
 
-	log.Debugf("Attempting to connect to hxd RPC %s as user %s "+
+	log.Debugf("Attempting to connect to hcd RPC %s as user %s "+
 		"using certificate located in %s",
 		cfg.HxdHost, cfg.HxdUser, cfg.HxdCert)
 
-	connCfgDaemon := &rpcclient.ConnConfig{
+	connCfgDaemon := &hcrpcclient.ConnConfig{
 		Host:         cfg.HxdHost,
 		Endpoint:     "ws", // websocket
 		User:         cfg.HxdUser,
@@ -37,9 +37,9 @@ func connectNodeRPC(ctx *appContext, cfg *config) (*rpcclient.Client, semver, er
 	}
 
 	ntfnHandlers := getNodeNtfnHandlers(ctx, connCfgDaemon)
-	hxdClient, err := rpcclient.New(connCfgDaemon, ntfnHandlers)
+	hxdClient, err := hcrpcclient.New(connCfgDaemon, ntfnHandlers)
 	if err != nil {
-		log.Errorf("Failed to start hxd RPC client: %s\n", err.Error())
+		log.Errorf("Failed to start hcd RPC client: %s\n", err.Error())
 		return nil, nodeVer, err
 	}
 
@@ -62,21 +62,21 @@ func connectNodeRPC(ctx *appContext, cfg *config) (*rpcclient.Client, semver, er
 	return hxdClient, nodeVer, nil
 }
 
-func connectWalletRPC(cfg *config) (*rpcclient.Client, semver, error) {
+func connectWalletRPC(cfg *config) (*hcrpcclient.Client, semver, error) {
 	var walletVer semver
 
 	hxwCert, err := ioutil.ReadFile(cfg.WalletCert)
 	if err != nil {
-		log.Errorf("Failed to read hxwallet cert file at %s: %s\n",
+		log.Errorf("Failed to read hcwallet cert file at %s: %s\n",
 			cfg.WalletCert, err.Error())
 		return nil, walletVer, err
 	}
 
-	log.Infof("Attempting to connect to hxwallet RPC %s as user %s "+
+	log.Infof("Attempting to connect to hcwallet RPC %s as user %s "+
 		"using certificate located in %s",
 		cfg.WalletHost, cfg.WalletUser, cfg.WalletCert)
 
-	connCfgWallet := &rpcclient.ConnConfig{
+	connCfgWallet := &hcrpcclient.ConnConfig{
 		Host:         cfg.WalletHost,
 		Endpoint:     "ws",
 		User:         cfg.WalletUser,
@@ -85,7 +85,7 @@ func connectWalletRPC(cfg *config) (*rpcclient.Client, semver, error) {
 	}
 
 	ntfnHandlers := getWalletNtfnHandlers(cfg)
-	hxwClient, err := rpcclient.New(connCfgWallet, ntfnHandlers)
+	hxwClient, err := hcrpcclient.New(connCfgWallet, ntfnHandlers)
 	if err != nil {
 		log.Errorf("Verify that username and password is correct and that "+
 			"rpc.cert is for your wallet: %v", cfg.WalletCert)
@@ -137,7 +137,7 @@ func walletGetTickets(ctx *appContext, currentHeight int64) (map[chainhash.Hash]
 	}
 
 	type promise struct {
-		rpcclient.FutureGetTransactionResult
+		hcrpcclient.FutureGetTransactionResult
 	}
 	promises := make([]promise, 0, len(tickets))
 
@@ -164,7 +164,7 @@ func walletGetTickets(ctx *appContext, currentHeight int64) (map[chainhash.Hash]
 				continue
 			}
 
-			addr, err := hxutil.DecodeAddress(gt.Details[i].Address)
+			addr, err := hcutil.DecodeAddress(gt.Details[i].Address)
 			if err != nil {
 				log.Warnf("invalid address %v", err)
 				continue

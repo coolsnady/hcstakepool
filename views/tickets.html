@@ -50,7 +50,7 @@
 				<a href="https://docs.coolsnady.org/mining/proof-of-stake/#automatic-purchasing-of-tickets" target="_blank">here</a>.</strong></p>
 			<p><strong>It is recommended to use the latest versions of the Decred software before starting.&nbsp;</strong>
 			<a href="https://coolsnady.org/downloads/" target="_blank"><span aria-label="Decred Downloads Page"> &#8675; Decred Downloads Page</span></a>
-			The <a href="https://docs.coolsnady.org/getting-started/user-guides/hxwallet-tickets/">hxwallet instructions</a>
+			The <a href="https://docs.coolsnady.org/getting-started/user-guides/hcwallet-tickets/">hcwallet instructions</a>
       are the most helpful if you wish to continue on the command-line path.</p>
 			<p><strong><u>Step 2</u></strong></p>
 			<p>Your multisignature script for delegating votes has been generated.
@@ -67,8 +67,8 @@
 				two ways:</p>
 
 			<p><strong><u>Step 3</u></strong></p>
-			<p><strong>Option A - hxwallet - Automatic purchasing</strong></p>
-			<p>Stop hxwallet if it is currently running and add the following to <strong>hxwallet.conf</strong>:</p>
+			<p><strong>Option A - hcwallet - Automatic purchasing</strong></p>
+			<p>Stop hcwallet if it is currently running and add the following to <strong>hcwallet.conf</strong>:</p>
 <pre>
 [Application Options]
 enableticketbuyer=true
@@ -80,9 +80,9 @@ poolfees={{ .PoolFees }}
 ticketbuyer.votingaddress={{ .User.MultiSigAddress }}
 ticketbuyer.maxpriceabsolute=100
 </pre>
-      <p>Unlock hxwallet and it will automatically purchase stake tickets delegated to the pool address.</p>
+      <p>Unlock hcwallet and it will automatically purchase stake tickets delegated to the pool address.</p>
 
-			<p><strong>Option B - hxwallet - Manual purchasing</strong></p>
+			<p><strong>Option B - hcwallet - Manual purchasing</strong></p>
 			<p>Start a wallet with funds available and manually purchase tickets with the following command using <strong>hxctl</strong>:</p>
 			<p>hxctl {{ if eq .Network "testnet"}}--testnet{{end}} --wallet purchaseticket "fromaccount" spendlimit minconf ticketaddress numtickets poolfeeaddress poolfeeamt</p>
 <pre>

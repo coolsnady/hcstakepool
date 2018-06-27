@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"github.com/coolsnady/hxstakepool/models"
+	"github.com/coolsnady/hcstakepool/models"
 	"github.com/go-gorp/gorp"
 	"golang.org/x/crypto/bcrypt"
 )

@@ -21,7 +21,7 @@ set -ex
 
 #Default GOVERSION
 GOVERSION=${1:-1.10}
-REPO=hxstakepool
+REPO=hcstakepool
 DOCKER_IMAGE_TAG=coolsnady-golang-builder-$GOVERSION
 
 testrepo () {

@@ -3,13 +3,13 @@ package main
 import (
 	"encoding/json"
 
-	"github.com/coolsnady/hxd/chaincfg/chainhash"
-	"github.com/coolsnady/hxd/rpcclient"
+	"github.com/coolsnady/hcd/chaincfg/chainhash"
+	"github.com/coolsnady/hcrpcclient"
 )
 
 // Define notification handlers
-func getNodeNtfnHandlers(ctx *appContext, connCfg *rpcclient.ConnConfig) *rpcclient.NotificationHandlers {
-	return &rpcclient.NotificationHandlers{
+func getNodeNtfnHandlers(ctx *appContext, connCfg *hcrpcclient.ConnConfig) *hcrpcclient.NotificationHandlers {
+	return &hcrpcclient.NotificationHandlers{
 		OnNewTickets: func(blockHash *chainhash.Hash, blockHeight int64, stakeDifficulty int64, tickets []*chainhash.Hash) {
 			nt := NewTicketsForBlock{
 				blockHash:   blockHash,
@@ -42,8 +42,8 @@ func getNodeNtfnHandlers(ctx *appContext, connCfg *rpcclient.ConnConfig) *rpccli
 	}
 }
 
-func getWalletNtfnHandlers(cfg *config) *rpcclient.NotificationHandlers {
-	return &rpcclient.NotificationHandlers{
+func getWalletNtfnHandlers(cfg *config) *hcrpcclient.NotificationHandlers {
+	return &hcrpcclient.NotificationHandlers{
 		OnUnknownNotification: func(method string, params []json.RawMessage) {
 			log.Infof("ignoring notification %v", method)
 		},

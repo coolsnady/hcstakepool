@@ -16,7 +16,7 @@ import (
 	"strings"
 
 	flags "github.com/btcsuite/go-flags"
-	"github.com/coolsnady/hxd/hxutil"
+	"github.com/coolsnady/hcutil"
 )
 
 const (
@@ -29,7 +29,7 @@ const (
 )
 
 var (
-	defaultHomeDir     = hxutil.AppDataDir("stakepoold", false)
+	defaultHomeDir     = hcutil.AppDataDir("stakepoold", false)
 	defaultConfigFile  = filepath.Join(defaultHomeDir, defaultConfigFilename)
 	defaultDataDir     = filepath.Join(defaultHomeDir, defaultDataDirname)
 	defaultRPCKeyFile  = filepath.Join(defaultHomeDir, "rpc.key")
@@ -45,7 +45,7 @@ var (
 // to parse and execute service commands specified via the -s flag.
 var runServiceCommand func(string) error
 
-// config defines the configuration options for hxd.
+// config defines the configuration options for hcd.
 //
 // See loadConfig for details on the configuration load process.
 type config struct {
@@ -67,10 +67,10 @@ type config struct {
 	DBPassword       string  `long:"dbpassword" description:"Password for database connection"`
 	DBPort           string  `long:"dbport" description:"Port for database connection"`
 	DBName           string  `long:"dbname" description:"Name of database"`
-	HxdHost         string  `long:"hxdhost" description:"Hostname/IP for hxd server"`
-	HxdUser         string  `long:"hxduser" description:"Username for hxd server"`
-	HxdPassword     string  `long:"hxdpassword" description:"Password for hxd server"`
-	HxdCert         string  `long:"hxdcert" description:"Certificate path for hxd server"`
+	HxdHost         string  `long:"hxdhost" description:"Hostname/IP for hcd server"`
+	HxdUser         string  `long:"hxduser" description:"Username for hcd server"`
+	HxdPassword     string  `long:"hxdpassword" description:"Password for hcd server"`
+	HxdCert         string  `long:"hxdcert" description:"Certificate path for hcd server"`
 	WalletHost       string  `long:"wallethost" description:"Hostname for wallet server"`
 	WalletUser       string  `long:"walletuser" description:"Username for wallet server"`
 	WalletPassword   string  `long:"walletpassword" description:"Password for wallet server"`

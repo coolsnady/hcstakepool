@@ -3,7 +3,7 @@ package controllers
 import (
 	"testing"
 
-	"github.com/coolsnady/hxd/chaincfg"
+	"github.com/coolsnady/hcd/chaincfg"
 )
 
 func TestGetNetworkName(t *testing.T) {

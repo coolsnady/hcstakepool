@@ -20,19 +20,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/coolsnady/hxd/blockchain/stake"
-	"github.com/coolsnady/hxd/chaincfg"
-	"github.com/coolsnady/hxd/chaincfg/chainhash"
-	"github.com/coolsnady/hxd/hxutil"
-	"github.com/coolsnady/hxd/hxjson"
-	"github.com/coolsnady/hxd/hdkeychain"
-	"github.com/coolsnady/hxd/rpcclient"
-	"github.com/coolsnady/hxd/wire"
+	"github.com/coolsnady/hcd/blockchain/stake"
+	"github.com/coolsnady/hcd/chaincfg"
+	"github.com/coolsnady/hcd/chaincfg/chainhash"
+	"github.com/coolsnady/hcutil"
+	"github.com/coolsnady/hcd/dcrjson"
+	"github.com/coolsnady/hcutil/hdkeychain"
+	"github.com/coolsnady/hcrpcclient"
+	"github.com/coolsnady/hcd/wire"
 
-	"github.com/coolsnady/hxstakepool/backend/stakepoold/rpc/rpcserver"
-	"github.com/coolsnady/hxstakepool/backend/stakepoold/userdata"
-	"github.com/coolsnady/hxwallet/wallet/txrules"
-	"github.com/coolsnady/hxwallet/wallet/udb"
+	"github.com/coolsnady/hcstakepool/backend/stakepoold/rpc/rpcserver"
+	"github.com/coolsnady/hcstakepool/backend/stakepoold/userdata"
+	"github.com/coolsnady/hcwallet/wallet/txrules"
+	"github.com/coolsnady/hcwallet/wallet/udb"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -53,7 +53,7 @@ type appContext struct {
 	poolFees               float64
 	grpcCommandQueueChan   chan *rpcserver.GRPCCommandQueue
 	newTicketsChan         chan NewTicketsForBlock
-	nodeConnection         *rpcclient.Client
+	nodeConnection         *hcrpcclient.Client
 	params                 *chaincfg.Params
 	lastBlockSeenHash      *chainhash.Hash
 	lastBlockSeenHeight    int64
@@ -62,7 +62,7 @@ type appContext struct {
 	spentmissedTicketsChan chan SpentMissedTicketsForBlock
 	userData               *userdata.UserData
 	votingConfig           *VotingConfig
-	walletConnection       *rpcclient.Client
+	walletConnection       *hcrpcclient.Client
 	winningTicketsChan     chan WinningTicketsForBlock
 	testing                bool // enabled only for testing
 }
@@ -164,8 +164,8 @@ func calculateFeeAddresses(xpubStr string, params *chaincfg.Params) (map[string]
 	return addrMap, nil
 }
 
-func deriveChildAddresses(key *hdkeychain.ExtendedKey, startIndex, count uint32, params *chaincfg.Params) ([]hxutil.Address, error) {
-	addresses := make([]hxutil.Address, 0, count)
+func deriveChildAddresses(key *hdkeychain.ExtendedKey, startIndex, count uint32, params *chaincfg.Params) ([]hcutil.Address, error) {
+	addresses := make([]hcutil.Address, 0, count)
 	for i := uint32(0); i < count; {
 		child, err := key.Child(startIndex + i)
 		if err == hdkeychain.ErrInvalidChild {
@@ -192,7 +192,7 @@ func deriveChildAddresses(key *hdkeychain.ExtendedKey, startIndex, count uint32,
 // evaluateStakePoolTicket evaluates a stake pool ticket to see if it's
 // acceptable to the stake pool. The ticket must pay out to the stake
 // pool cold wallet, and must have a sufficient fee.
-func evaluateStakePoolTicket(ctx *appContext, tx *wire.MsgTx, blockHeight int32, poolUser hxutil.Address) (bool, error) {
+func evaluateStakePoolTicket(ctx *appContext, tx *wire.MsgTx, blockHeight int32, poolUser hcutil.Address) (bool, error) {
 	// Check the first commitment output (txOuts[1])
 	// and ensure that the address found there exists
 	// in the list of approved addresses. Also ensure
@@ -207,7 +207,7 @@ func evaluateStakePoolTicket(ctx *appContext, tx *wire.MsgTx, blockHeight int32,
 	}
 
 	// Extract the fee from the ticket.
-	in := hxutil.Amount(0)
+	in := hcutil.Amount(0)
 	for i := range tx.TxOut {
 		if i%2 != 0 {
 			commitAmt, err := stake.AmountFromSStxPkScrCommitment(
@@ -219,9 +219,9 @@ func evaluateStakePoolTicket(ctx *appContext, tx *wire.MsgTx, blockHeight int32,
 			in += commitAmt
 		}
 	}
-	out := hxutil.Amount(0)
+	out := hcutil.Amount(0)
 	for i := range tx.TxOut {
-		out += hxutil.Amount(tx.TxOut[i].Value)
+		out += hcutil.Amount(tx.TxOut[i].Value)
 	}
 	fees := in - out
 
@@ -236,7 +236,7 @@ func evaluateStakePoolTicket(ctx *appContext, tx *wire.MsgTx, blockHeight int32,
 
 		// Calculate the fee required based on the current
 		// height and the required amount from the pool.
-		feeNeeded := txrules.StakePoolTicketFee(hxutil.Amount(
+		feeNeeded := txrules.StakePoolTicketFee(hcutil.Amount(
 			tx.TxOut[0].Value), fees, blockHeight, ctx.poolFees,
 			ctx.params)
 		if commitAmt < feeNeeded {
@@ -310,15 +310,15 @@ func runMain() error {
 		return err
 	}
 
-	rpcclient.UseLogger(clientLog)
+	hcrpcclient.UseLogger(clientLog)
 
 	var walletVer semver
 	walletConn, walletVer, err := connectWalletRPC(cfg)
 	if err != nil || walletConn == nil {
-		log.Infof("Connection to hxwallet failed: %v", err)
+		log.Infof("Connection to hcwallet failed: %v", err)
 		return err
 	}
-	log.Infof("Connected to hxwallet (JSON-RPC API v%s)",
+	log.Infof("Connected to hcwallet (JSON-RPC API v%s)",
 		walletVer.String())
 	walletInfoRes, err := walletConn.WalletInfo()
 	if err != nil || walletInfoRes == nil {
@@ -376,7 +376,7 @@ func runMain() error {
 	// Daemon client connection
 	nodeConn, nodeVer, err := connectNodeRPC(ctx, cfg)
 	if err != nil || nodeConn == nil {
-		log.Infof("Connection to hxd failed: %v", err)
+		log.Infof("Connection to hcd failed: %v", err)
 		return err
 	}
 	ctx.nodeConnection = nodeConn
@@ -384,10 +384,10 @@ func runMain() error {
 	// Display connected network
 	curnet, err := nodeConn.GetCurrentNet()
 	if err != nil {
-		log.Errorf("Unable to get current network from hxd: %v", err)
+		log.Errorf("Unable to get current network from hcd: %v", err)
 		return err
 	}
-	log.Infof("Connected to hxd (JSON-RPC API v%s) on %v",
+	log.Infof("Connected to hcd (JSON-RPC API v%s) on %v",
 		nodeVer.String(), curnet.String())
 
 	// prune save data
@@ -433,7 +433,7 @@ func runMain() error {
 	for {
 		curHash, curHeight, err := nodeConn.GetBestBlock()
 		if err != nil {
-			log.Errorf("unable to get bestblock from hxd: %v", err)
+			log.Errorf("unable to get bestblock from hcd: %v", err)
 			return err
 		}
 		log.Infof("current block height %v hash %v", curHeight, curHash)
@@ -446,7 +446,7 @@ func runMain() error {
 
 		afterHash, afterHeight, err := nodeConn.GetBestBlock()
 		if err != nil {
-			log.Errorf("unable to get bestblock from hxd: %v", err)
+			log.Errorf("unable to get bestblock from hcd: %v", err)
 			return err
 		}
 
@@ -479,7 +479,7 @@ func runMain() error {
 			"spent/missed tickets notifications: %s\n", err.Error())
 		return err
 	}
-	log.Info("subscribed to notifications from hxd")
+	log.Info("subscribed to notifications from hcd")
 
 	if !cfg.NoRPCListen {
 		startGRPCServers(ctx.grpcCommandQueueChan)
@@ -762,7 +762,7 @@ type ticketMetadata struct {
 	voteBitsExtended string                    // voteBits extended
 }
 
-// getticket pulls the transaction information for a ticket from hxwallet. This is a go routine!
+// getticket pulls the transaction information for a ticket from hcwallet. This is a go routine!
 func (ctx *appContext) getticket(wg *sync.WaitGroup, nt *ticketMetadata) {
 	start := time.Now()
 
@@ -885,7 +885,7 @@ func (ctx *appContext) vote(wg *sync.WaitGroup, blockHash *chainhash.Hash, block
 	}()
 
 	// Ask wallet to generate vote result.
-	var res *hxjson.GenerateVoteResult
+	var res *dcrjson.GenerateVoteResult
 	res, w.err = ctx.walletConnection.GenerateVote(blockHash, blockHeight,
 		w.ticket, w.config.VoteBits, ctx.votingConfig.VoteBitsExtended)
 	if w.err != nil || res.Hex == "" {
@@ -953,7 +953,7 @@ func (ctx *appContext) processNewTickets(nt NewTicketsForBlock) {
 		}
 
 		// decode address
-		addr, err := hxutil.DecodeAddress(n.msa)
+		addr, err := hcutil.DecodeAddress(n.msa)
 		if err != nil {
 			log.Warnf("invalid address %v", err)
 			continue
@@ -1133,7 +1133,7 @@ func (ctx *appContext) processWinningTickets(wt WinningTicketsForBlock) {
 		} else {
 			// If the user's voting config has a vote version that
 			// is different from our global vote version that we
-			// plucked from hxwallet walletinfo then just use the
+			// plucked from hcwallet walletinfo then just use the
 			// default votebits.
 			if voteCfg.VoteBitsVersion !=
 				ctx.votingConfig.VoteVersion {
