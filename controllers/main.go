@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"crypto/tls"
 	"net"
 	"net/http"
 	"net/smtp"
@@ -482,11 +483,19 @@ func (controller *MainController) isAdmin(c web.C, r *http.Request) (bool, error
 
 	return true, nil
 }
+//return a smtp client
+func Dial(addr string) (*smtp.Client, error) {
+    conn, err := tls.Dial("tcp", addr, nil)
+    if err != nil {
+		log.Errorf("Dialing Error:", err)
+		return nil,err
+    }
+    //分解主机端口字符串
+    host, _, _ := net.SplitHostPort(addr)
+    return smtp.NewClient(conn, host)
+}
 
-// SendMail sends an email with the passed data using the system's SMTP
-// configuration.
-func (controller *MainController) SendMail(emailaddress string, subject string, body string) error {
-
+func (controller *MainController) SendMailUsingTLS(emailaddress string , subject string, body string) (err error) {
 	hostname := controller.smtpHost
 
 	if strings.Contains(controller.smtpHost, ":") {
@@ -494,30 +503,54 @@ func (controller *MainController) SendMail(emailaddress string, subject string, 
 		hostname = parts[0]
 	}
 
-	// Set up authentication information.
-	auth := smtp.PlainAuth("", controller.smtpUsername, controller.smtpPassword, hostname)
+	auth := smtp.PlainAuth( "", controller.smtpUsername, controller.smtpPassword,hostname)
 
-	// Connect to the server, authenticate, set the sender and recipient,
-	// and send the email all in one step.
-	to := []string{emailaddress}
+	//create smtp client
+	c, err := Dial(controller.smtpHost)
+	if err != nil {
+		log.Errorf("Create smpt client error:", err)
+		return err
+	}
+   defer c.Close()
+
+   if auth != nil {
+		if ok, _ := c.Extension("AUTH"); ok {
+			if err = c.Auth(auth); err != nil {
+				return err
+			}
+		}
+	}
+
 	msg := []byte("To: " + emailaddress + "\r\n" +
 		"From: " + controller.smtpFrom + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"\r\n" +
 		body + "\r\n")
-
-	if controller.smtpHost == "" {
-		log.Warn("no mail server configured -- skipping sending " + string(msg))
-		return nil
+    
+	if err = c.Mail(controller.smtpUsername); err != nil {
+		return err
 	}
 
-	err := smtp.SendMail(controller.smtpHost, auth, controller.smtpFrom, to, msg)
+	if err = c.Rcpt(emailaddress); err != nil {
+		return err
+	}
+
+	w, err := c.Data()
 	if err != nil {
-		log.Errorf("Error sending email to %v", err)
+		return err
 	}
-	return err
-}
 
+	_, err = w.Write(msg)
+	if err != nil {
+		return err
+	}
+
+	err = w.Close()
+	if err != nil {
+		return err
+	}
+	return c.Quit()
+}
 // StakepooldGetIgnoredLowFeeTickets performs a gRPC GetIgnoredLowFeeTickets
 // request against all stakepoold instances and returns the first result fetched
 // without errors
@@ -1431,7 +1464,7 @@ func (controller *MainController) PasswordResetPost(c web.C, r *http.Request) (s
 			"If you did not make this request, you may safely ignore this " +
 			"email.\r\n" + "However, you may want to look into how this " +
 			"happened.\r\n"
-		err := controller.SendMail(user.Email, "Stake pool password reset", body)
+		err := controller.SendMailUsingTLS(user.Email, "Stake pool password reset", body)
 		if err != nil {
 			session.AddFlash("Unable to send password reset email", "passwordresetError")
 			log.Errorf("error sending password reset email %v", err)
@@ -1667,7 +1700,7 @@ func (controller *MainController) SettingsPost(c web.C, r *http.Request) (string
 			"If you did not make this request, you may safely ignore this " +
 			"email.\r\n" + "However, you may want to look into how this " +
 			"happened.\r\n"
-		err = controller.SendMail(newEmail, "Stake pool email change", bodyNew)
+		err = controller.SendMailUsingTLS(newEmail, "Stake pool email change", bodyNew)
 		if err != nil {
 			session.AddFlash("Unable to send email change token.",
 				"settingsError")
@@ -1684,7 +1717,7 @@ func (controller *MainController) SettingsPost(c web.C, r *http.Request) (string
 			"The request was made from IP address " + remoteIP + "\r\n\n" +
 			"If you did not make this request, please contact the \r\n" +
 			"stake pool administrator immediately.\r\n"
-		err = controller.SendMail(user.Email, "Stake pool email change",
+		err = controller.SendMailUsingTLS(user.Email, "Stake pool email change",
 			bodyOld)
 		// this likely has the same status as the above email so don't
 		// inform the user.
@@ -1714,7 +1747,7 @@ func (controller *MainController) SettingsPost(c web.C, r *http.Request) (string
 			"was just changed by IP Address " + remoteIP + "\r\n\n" +
 			"If you did not make this request, please contact the \r\n" +
 			"stake pool administrator immediately.\r\n"
-		err = controller.SendMail(user.Email, "Stake pool password change",
+		err = controller.SendMailUsingTLS(user.Email, "Stake pool password change",
 			body)
 		if err != nil {
 			log.Errorf("error sending password change confirmation %v %v",
@@ -1880,7 +1913,7 @@ func (controller *MainController) SignUpPost(c web.C, r *http.Request) (string, 
 	body = strings.Replace(body, "__REMOTEIP__", remoteIP, -1)
 	body = strings.Replace(body, "__TOKEN__", token, -1)
 
-	err := controller.SendMail(user.Email, signupEmailSubject, body)
+	err := controller.SendMailUsingTLS(user.Email, signupEmailSubject, body)
 	if err != nil {
 		session.AddFlash("Unable to send signup email", "signupError")
 		log.Errorf("error sending verification email %v", err)
