@@ -7,7 +7,7 @@
 hcstakepool is a web application which coordinates generating 1-of-2 multisig
 addresses on a pool of [hcwallet](https://github.com/coolsnady/hcwallet) servers
 so users can purchase [proof-of-stake tickets](https://docs.coolsnady.org/mining/proof-of-stake/)
-on the [Decred](https://coolsnady.org/) network and have the pool of wallet servers
+on the [Hcd](https://coolsnady.org/) network and have the pool of wallet servers
 vote on their behalf when the ticket is selected.
 
 ## Architecture
@@ -165,7 +165,7 @@ $ go build
 
 These instructions assume you are familiar with hcd/hcwallet.
 
-- Create basic hcd/hcwallet/hxctl config files with usernames, passwords, rpclisten, and network set appropriately within them or run example commands with additional flags as necessary
+- Create basic hcd/hcwallet/hcctl config files with usernames, passwords, rpclisten, and network set appropriately within them or run example commands with additional flags as necessary
 
 - Build/install hcd and hcwallet from latest master
 
@@ -183,14 +183,14 @@ $ hcwallet
 - Get the master pubkey for the account you wish to use. This will be needed to configure hcwallet and hcstakepool.
 
 ```bash
-$ hxctl --wallet createnewaccount teststakepoolfees
-$ hxctl --wallet getmasterpubkey teststakepoolfees
+$ hcctl --wallet createnewaccount teststakepoolfees
+$ hcctl --wallet getmasterpubkey teststakepoolfees
 ```
 
 - Mark 10000 addresses in use for the account so the wallet will recognize transactions to those addresses. Fees from UserId 1 will go to address 1, UserId 2 to address 2, and so on.
 
 ```bash
-$ hxctl --wallet accountsyncaddressindex teststakepoolfees 0 10000
+$ hcctl --wallet accountsyncaddressindex teststakepoolfees 0 10000
 ```
 
 #### Stake pool voting wallets
@@ -210,7 +210,7 @@ $ hcwallet
 - Get the master pubkey from the default account.  This will be used for votingwalletextpub in hcstakepool.conf.
 
 ```bash
-$ hxctl --wallet getmasterpubkey default
+$ hcctl --wallet getmasterpubkey default
 ```
 
 #### MySQL
@@ -299,7 +299,7 @@ were processed.
 If a user pays an incorrect fee you may add their tickets like so (requires hcd running with txindex=1):
 
 ```bash
-hxctl --wallet stakepooluserinfo "MultiSigAddress" | grep -Pzo '(?<="invalid": \[)[^\]]*' | tr -d , | xargs -Itickethash hxctl --wallet getrawtransaction tickethash | xargs -Itickethex hxctl --wallet addticket "tickethex"
+hcctl --wallet stakepooluserinfo "MultiSigAddress" | grep -Pzo '(?<="invalid": \[)[^\]]*' | tr -d , | xargs -Itickethash hcctl --wallet getrawtransaction tickethash | xargs -Itickethex hcctl --wallet addticket "tickethex"
 ```
 
 ## Backups, monitoring, security considerations
