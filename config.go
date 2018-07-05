@@ -1,5 +1,6 @@
 // Copyright (c) 2013-2014 The btcsuite developers
-// Copyright (c) 2015-2016 The Hcd developers
+// Copyright (c) 2015-2016 The Decred developers
+// Copyright (c) 2018-2020 The Hcd developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -47,9 +48,9 @@ const (
 
 var (
 	hxstakepoolHomeDir = hcutil.AppDataDir("hcstakepool", false)
-	defaultConfigFile   = filepath.Join(hxstakepoolHomeDir, defaultConfigFilename)
-	defaultDataDir      = filepath.Join(hxstakepoolHomeDir, defaultDataDirname)
-	defaultLogDir       = filepath.Join(hxstakepoolHomeDir, defaultLogDirname)
+	defaultConfigFile  = filepath.Join(hxstakepoolHomeDir, defaultConfigFilename)
+	defaultDataDir     = filepath.Join(hxstakepoolHomeDir, defaultDataDirname)
+	defaultLogDir      = filepath.Join(hxstakepoolHomeDir, defaultLogDirname)
 )
 
 // runServiceCommand is only set to a real function on Windows.  It is used
