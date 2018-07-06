@@ -1,62 +1,62 @@
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/btcsuite/btclog"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/btcsuite/go-flags"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/coolsnady/hcd"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/coolsnady/hcwallet"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/dgrijalva/jwt-go"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/go-gorp/gorp"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/go-sql-driver/mysql"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/golang/protobuf"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/gorilla/context"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/gorilla/sessions"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/haisum/recaptcha"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/jrick/logrotate"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/zenazn/goji"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "golang.org/x/crypto"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "golang.org/x/net"
 
 [[constraint]]
@@ -64,9 +64,9 @@
   name = "google.golang.org/grpc"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/coolsnady/hcrpcclient"
 
 [[constraint]]
-  branch = "v0.1.0"
+  branch = "master"
   name = "github.com/coolsnady/hcutil"
