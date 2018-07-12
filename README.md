@@ -69,7 +69,7 @@ database and reload its config.
 - General markup improvements.
   - Removed mention of creating a voting account as it has been deprecated.
   - Instructions were further clarified and updated to strongly recommend the
-    use of Decrediton/Paymetheus.
+    use of HcGUI/Paymetheus.
   - Fragments of invalid markup were fixed.
 
 ## 1.1.1 Upgrade Guide
