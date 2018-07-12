@@ -1,5 +1,6 @@
 // Copyright (c) 2013-2014 The btcsuite developers
-// Copyright (c) 2015-2016 The Hcd developers
+// Copyright (c) 2015-2016 The Decred developers
+// Copyright (c) 2018-2020 The Hcd developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -18,7 +19,7 @@ var activeNetParams = &mainNetParams
 // network and test networks.
 type params struct {
 	*chaincfg.Params
-	HcdRPCServerPort   string
+	HcdRPCServerPort    string
 	RPCServerPort       string
 	WalletRPCServerPort string
 }
@@ -31,7 +32,7 @@ type params struct {
 // to emulate the full reference implementation RPC API.
 var mainNetParams = params{
 	Params:              &chaincfg.MainNetParams,
-	HcdRPCServerPort:   "9109",
+	HcdRPCServerPort:    "9109",
 	RPCServerPort:       "9113",
 	WalletRPCServerPort: "9110",
 }
@@ -41,7 +42,7 @@ var mainNetParams = params{
 // reference implementation - see the mainNetParams comment for details.
 var testNet2Params = params{
 	Params:              &chaincfg.TestNet2Params,
-	HcdRPCServerPort:   "19109",
+	HcdRPCServerPort:    "19109",
 	RPCServerPort:       "19113",
 	WalletRPCServerPort: "12010",
 }
@@ -50,7 +51,7 @@ var testNet2Params = params{
 // (wire.SimNet).
 var simNetParams = params{
 	Params:              &chaincfg.SimNetParams,
-	HcdRPCServerPort:   "19556",
+	HcdRPCServerPort:    "19556",
 	RPCServerPort:       "19560",
 	WalletRPCServerPort: "19557",
 }

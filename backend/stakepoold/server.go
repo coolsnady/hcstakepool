@@ -1,4 +1,5 @@
-// Copyright (c) 2017 The Hcd developers
+// Copyright (c) 2017 The Decred developers
+// Copyright (c) 2018-2020 The Hcd developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -23,11 +24,11 @@ import (
 	"github.com/coolsnady/hcd/blockchain/stake"
 	"github.com/coolsnady/hcd/chaincfg"
 	"github.com/coolsnady/hcd/chaincfg/chainhash"
-	"github.com/coolsnady/hcutil"
 	"github.com/coolsnady/hcd/dcrjson"
-	"github.com/coolsnady/hcutil/hdkeychain"
-	"github.com/coolsnady/hcrpcclient"
 	"github.com/coolsnady/hcd/wire"
+	"github.com/coolsnady/hcrpcclient"
+	"github.com/coolsnady/hcutil"
+	"github.com/coolsnady/hcutil/hdkeychain"
 
 	"github.com/coolsnady/hcstakepool/backend/stakepoold/rpc/rpcserver"
 	"github.com/coolsnady/hcstakepool/backend/stakepoold/userdata"
@@ -179,7 +180,7 @@ func deriveChildAddresses(key *hdkeychain.ExtendedKey, startIndex, count uint32,
 		if key.GetAlgType() == 4 {
 			addrType = 1
 		}
-		addr, err := child.Address(params,addrType)
+		addr, err := child.Address(params, addrType)
 		if err != nil {
 			return nil, err
 		}

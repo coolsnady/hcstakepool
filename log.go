@@ -1,4 +1,5 @@
-// Copyright (c) 2016 The Hcd developers
+// Copyright (c) 2016 The Decred developers
+// Copyright (c) 2018-2020 The Hcd developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -63,7 +64,7 @@ func init() {
 
 // subsystemLoggers maps each subsystem identifier to its associated logger.
 var subsystemLoggers = map[string]btclog.Logger{
-	"HXS": log,
+	"HXS":  log,
 	"CNTL": controllersLog,
 	"GRPC": stakepooldclientLog,
 	"MODL": modelsLog,

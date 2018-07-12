@@ -1,5 +1,6 @@
 // Copyright (c) 2013-2014 The btcsuite developers
-// Copyright (c) 2015-2016 The Hcd developers
+// Copyright (c) 2015-2016 The Decred developers
+// Copyright (c) 2018-2020 The Hcd developers
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
@@ -67,10 +68,10 @@ type config struct {
 	DBPassword       string  `long:"dbpassword" description:"Password for database connection"`
 	DBPort           string  `long:"dbport" description:"Port for database connection"`
 	DBName           string  `long:"dbname" description:"Name of database"`
-	HcdHost         string  `long:"hcdhost" description:"Hostname/IP for hcd server"`
-	HcdUser         string  `long:"hcduser" description:"Username for hcd server"`
-	HcdPassword     string  `long:"hcdpassword" description:"Password for hcd server"`
-	HcdCert         string  `long:"hcdcert" description:"Certificate path for hcd server"`
+	HcdHost          string  `long:"hcdhost" description:"Hostname/IP for hcd server"`
+	HcdUser          string  `long:"hcduser" description:"Username for hcd server"`
+	HcdPassword      string  `long:"hcdpassword" description:"Password for hcd server"`
+	HcdCert          string  `long:"hcdcert" description:"Certificate path for hcd server"`
 	WalletHost       string  `long:"wallethost" description:"Hostname for wallet server"`
 	WalletUser       string  `long:"walletuser" description:"Username for wallet server"`
 	WalletPassword   string  `long:"walletpassword" description:"Password for wallet server"`
